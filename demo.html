@@ -5,9 +5,10 @@
     <script src="bower_components/platform/platform.js"></script>
 
     <!-- 2. Use an HTML Import to bring in the element. -->
-    <link rel="import" href="elements/x-mixtaper/x-mixtaper.html">
+    <link rel="import" href="src/x-mixtaper.html">
 
-    <link rel="import" href="/bower_components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 
     <style>
       * {
@@ -24,7 +25,6 @@
         color: #f1f1f1;
         fill: #f1f1f1;
       }
-
     </style>
 
   </head>
@@ -41,11 +41,5 @@
     <x-mixtaper tape="tape1"></x-mixtaper>
   </div>
 
-  <script>
-    // Wait for 'polymer-ready'. Ensures the element is upgraded.
-    window.addEventListener('polymer-ready', function(e) {
-
-    });
-  </script>
   </body>
 </html>

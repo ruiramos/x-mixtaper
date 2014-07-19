@@ -1,0 +1,37 @@
+<link rel="import" href="/bower_components/core-ajax/core-ajax.html">
+<!--
+  API access
+
+  @attribute tape
+  @type Array
+  @default []
+-->
+<polymer-element name="tape-service" attributes="tape tapeId">
+  <template>
+    <style>
+    :host {
+      display: none;
+    }
+    </style>
+    <core-ajax id="ajax"
+      auto
+      url="/mixtapes.json"
+      on-core-response="{{tapeLoaded}}"
+      handleAs="json">
+    </core-ajax>
+  </template>
+  <script>
+  Polymer('tape-service', {
+    created: function() {
+      this.tape = {};
+      this.tapeId = this.tapeId || "tape1";
+    },
+    tapeLoaded: function() {
+      // Make a copy of the loaded data
+      this.tape = this.$.ajax.response[this.tapeId];
+      this.fire('tape-loaded');
+    }
+
+  });
+  </script>
+</polymer-element>
