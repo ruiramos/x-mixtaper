@@ -30,7 +30,8 @@ $ bower install x-mixtaper --save
 
 3. Create a songList.json or copy the one providede
 
-    ```{
+    ```json
+    {
       "tape1": {
         "title": "My first mixtape",
         "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -46,7 +47,8 @@ $ bower install x-mixtaper --save
           "length": "03:21"
         }]
       }
-    }```
+    }
+    ```
 
 
 4. Start using it!
