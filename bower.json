@@ -1,0 +1,26 @@
+{
+  "name": "x-mixtaper",
+  "version": "0.1.0",
+  "authors": [
+    "Rui Ramos <ruiramos@gmail.com>"
+  ],
+  "description": "x-mixtaper is a Polymer audio player with playlist functionality, built for sharing/publishing mixtapes.",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "keywords": [
+    "web-components"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-elements": "Polymer/core-elements#master",
+    "paper-elements": "Polymer/paper-elements#master"
+  }
+}

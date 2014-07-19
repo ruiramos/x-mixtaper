@@ -1,0 +1,29 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/core-menu/core-menu.html">
+<link rel="import" href="../playlist-item/playlist-item.html">
+
+<polymer-element name="x-playlist" attributes="tape">
+  <template>
+    <style>
+    :host {
+
+    }
+    </style>
+
+  <core-menu>
+    <template repeat="{{song in tape.songs}}">
+      <playlist-item song="{{ song }}" on-click="{{ playSongHandler }}" playing="{{ !!song.active }}"></playlist-item>
+    </template>
+  </core-menu>
+
+  </template>
+  <script>
+    Polymer('x-playlist', {
+      playSongHandler: function(evt, d, item){
+        this.tape.songs.forEach(function(s){ s.active = false; });
+        item.song.active = true;
+        this.fire('play-song', item.song);
+      }
+    });
+  </script>
+</polymer-element>

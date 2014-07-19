@@ -1,0 +1,17 @@
+{
+  "tape1": {
+    "title": "My first mixtape",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "songs": [{
+      "title": "Ukulele Song",
+      "artist": "Rui Ramos",
+      "file":"/mp3/1/RuiRamos-UkuleleSong.mp3",
+      "length": "04:22"
+    },{
+      "title": "I Dreamed a Dream",
+      "artist": "Wing",
+      "file":"/mp3/1/02 I Dreamed a Dream.m4a",
+      "length": "03:21"
+    }]
+  }
+}
