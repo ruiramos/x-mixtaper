@@ -6,7 +6,7 @@ x-mixtaper is a Polymer audio player with playlist functionality, built for shar
 It reads what to play from the `songList.json`, which supports several mixtapes.
 
 ## Demo
-Soon
+[Here](http://mix.ruiramos.com/)
 
 ## Install
 Install the component using [Bower](http://bower.io/):
@@ -25,13 +25,34 @@ $ bower install x-mixtaper --save
 2. Import Custom Element:
 
     ```html
-    <link rel="import" href="bower_components/x-mixtaper/x-mixtaper.html">
+    <link rel="import" href="bower_components/x-mixtaper/elements/x-mixtaper.html">
     ```
 
-3. Start using it!
+3. Create a songList.json or copy the one providede
+
+    ```{
+      "tape1": {
+        "title": "My first mixtape",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "songs": [{
+          "title": "Ukulele Song",
+          "artist": "Rui Ramos",
+          "file":"/mp3/1/RuiRamos-UkuleleSong.mp3",
+          "length": "04:22"
+        },{
+          "title": "I Dreamed a Dream",
+          "artist": "Wing",
+          "file":"/mp3/1/02 I Dreamed a Dream.m4a",
+          "length": "03:21"
+        }]
+      }
+    }```
+
+
+4. Start using it!
 
     ```html
-    <x-mixtaper tape="tapeId"></x-mixtaper>
+    <x-mixtaper tape="tape1"></x-mixtaper>
     ```
 
 Remember that for the audio skipping to work you must be using a web server with HTTP 1.1 byte-range requests support.
