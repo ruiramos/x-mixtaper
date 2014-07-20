@@ -28,7 +28,7 @@ $ bower install x-mixtaper --save
     <link rel="import" href="bower_components/x-mixtaper/dist/x-mixtaper.html">
     ```
 
-3. Add your own songList.json and mp3s (or copy the samples provided)
+3. Add your own mixtapes.json and mp3s (or copy the samples provided)
 
     ```json
     {
