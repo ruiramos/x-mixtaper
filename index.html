@@ -1,16 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <script src="bower_components/platform/platform.js"></script>
+  <head>
+    <!-- 1. Load platform.js for polyfill support. -->
+    <script src="bower_components/platform/platform.js"></script>
 
-  <link rel="import" href="bower_components/polymer/polymer.html">
-  <link rel="import" href="bower_components/core-component-page/core-component-page.html">
+    <!-- 2. Use an HTML Import to bring in the element. -->
+    <link rel="import" href="src/x-mixtaper.html">
 
-</head>
-<body unresolved>
+    <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 
-  <core-component-page moduleName=""></core-component-page>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-</body>
+      body {
+        font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+        margin: 0;
+        padding: 0;
+      }
+
+      core-toolbar {
+        color: #f1f1f1;
+        fill: #f1f1f1;
+      }
+    </style>
+
+  </head>
+  <body unresolved touch-action="auto">
+
+  <core-toolbar style="background: #4285f4;">
+    <paper-icon-button icon="menu"></paper-icon-button>
+    <span flex>Mixtaperz</span>
+    <paper-icon-button icon="refresh"></paper-icon-button>
+    <paper-icon-button icon="more-vert"></paper-icon-button>
+  </core-toolbar>
+
+  <div class="container" layout vertical center>
+    <x-mixtaper tape="tape1"></x-mixtaper>
+  </div>
+
+  </body>
 </html>

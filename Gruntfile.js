@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         },
         'gh-pages': {
             options: {
-                clone: 'bower_components/my-repo'
+                clone: 'bower_components/x-mixtaper'
             },
             src: [
                 'bower_components/**/*',
