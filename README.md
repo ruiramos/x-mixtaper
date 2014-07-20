@@ -25,7 +25,7 @@ $ bower install x-mixtaper --save
 2. Import Custom Element:
 
     ```html
-    <link rel="import" href="bower_components/x-mixtaper/x-mixtaper.html">
+    <link rel="import" href="bower_components/x-mixtaper/dist/x-mixtaper.html">
     ```
 
 3. Add your own songList.json and mp3s (or copy the samples provided)
