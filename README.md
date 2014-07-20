@@ -1,7 +1,7 @@
 x-mixtaper
 ==========
 
-x-mixtaper is a Web Components (Polymer) audio player with playlist functionality built for sharing/publishing mixtapes and playlists.
+x-mixtaper is a Web Components (Polymer based) audio player with playlist functionality built for sharing/publishing mixtapes and playlists.
 
 It reads what to play from the `songList.json`, which supports several mixtapes.
 
@@ -60,3 +60,49 @@ $ bower install x-mixtaper --save
 Remember that for the audio skipping to work you must be using a web server with HTTP 1.1 byte-range requests support.
 
 Feel free to use it and submit pull requests!
+
+## Development
+
+In order to run it locally you'll need to fetch some dependencies and a basic server setup.
+
+* Install [Bower](http://bower.io/) & [Grunt](http://gruntjs.com/):
+
+    ```sh
+    $ [sudo] npm install -g bower grunt-cli
+    ```
+
+* Install local dependencies:
+
+    ```sh
+    $ bower install && npm install
+    ```
+
+* To test your project, start the development server and open `http://localhost:8000`.
+
+    ```sh
+    $ grunt server
+    ```
+
+* To build the distribution files before releasing a new version.
+
+    ```sh
+    $ grunt build
+    ```
+
+* To provide a live demo, send everything to `gh-pages` branch.
+
+    ```sh
+    $ grunt deploy
+    ```
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
+
+## License
+
+[MIT License](http://opensource.org/licenses/MIT)
