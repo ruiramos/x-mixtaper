@@ -3,7 +3,7 @@ x-mixtaper
 
 x-mixtaper is a Web Components (Polymer based) audio player with playlist functionality built for sharing/publishing mixtapes and playlists.
 
-It reads what to play from the `songList.json`, which supports several mixtapes.
+It reads what to play from the `mixtapes.json`, which supports several playlists.
 
 ## Demo
 [Here](http://mix.ruiramos.com/)
