@@ -1,7 +1,7 @@
 x-mixtaper
 ==========
 
-x-mixtaper is a Polymer audio player with playlist functionality, built for sharing/publishing mixtapes.
+x-mixtaper is a Web Components (Polymer) audio player with playlist functionality built for sharing/publishing mixtapes and playlists.
 
 It reads what to play from the `songList.json`, which supports several mixtapes.
 
@@ -25,7 +25,7 @@ $ bower install x-mixtaper --save
 2. Import Custom Element:
 
     ```html
-    <link rel="import" href="bower_components/x-mixtaper/elements/x-mixtaper.html">
+    <link rel="import" href="bower_components/x-mixtaper/x-mixtaper.html">
     ```
 
 3. Add your own songList.json and mp3s (or copy the samples provided)

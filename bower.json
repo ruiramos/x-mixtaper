@@ -4,7 +4,7 @@
   "authors": [
     "Rui Ramos <ruiramos@gmail.com>"
   ],
-  "description": "x-mixtaper is a Polymer audio player with playlist functionality, built for sharing/publishing mixtapes.",
+  "description": "x-mixtaper is a Web Components (Polymer) audio player with playlist functionality built for sharing/publishing mixtapes and playlists.",
   "main": "index.html",
   "license": "MIT",
   "ignore": [
