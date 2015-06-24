@@ -27,17 +27,6 @@ It reads what to play from the `songList.json`, which supports several mixtapes.
   <template>
     <link rel="stylesheet" href="x-mixtaper.css">
 
-
-    <div class="header">
-      <span class="mixtaper-title">{{loadedTape.title}}</span>
-      <div class="mixtaper-description" style="margin: 20px;">{{loadedTape.description}}</div>
-    </div>
-
-    <div>
-    </div>
-
-    <div id="dummyvid"></div>
-
     <div>
       <div>
         <div style="float: left;">
@@ -67,6 +56,22 @@ It reads what to play from the `songList.json`, which supports several mixtapes.
         id="slider" style="background: #DDF;"></paper-slider>
     </div>
 
+    <div>
+      <div class="header">
+        <span class="mixtaper-title">{{loadedTape.title}}</span>
+        <div class="mixtaper-description" style="margin: 20px;">{{loadedTape.description}}</div>
+      </div>
+
+      <div id="dummyvid"></div>
+
+      <div style="padding: 50px;">
+        <span style="font-size: 30px;">Playlist</span><br>
+        <x-playlist
+          id="playlist"
+          on-play-media="playListCLickHandler"></x-playlist>
+      </div>
+    </div>
+
     <tape-service
       tapeId="tape1"
       tape="{{ tape }}"
@@ -77,13 +82,6 @@ It reads what to play from the `songList.json`, which supports several mixtapes.
       id="audioElement"
       preload="auto"
       src="{{ selectedSong.uri }}"></audio>
-
-    <div style="padding: 50px;">
-      <span style="font-size: 30px;">Playlist</span><br>
-      <x-playlist
-        id="playlist"
-        on-play-media="playListCLickHandler"></x-playlist>
-    </div>
 
 
   </template>
@@ -196,7 +194,7 @@ It reads what to play from the `songList.json`, which supports several mixtapes.
         console.log(that.$.dummyvid.innerHTML);
 
         videoElement.addEventListener('click',
-          function() { if (videoElement.isPlaying()) { videoElement.pause(); } else { videoElement.play(); }
+          function() { if (videoElement.isPlaying()) { videoElement.pause(); that.playing = false;} else { videoElement.play(); that.playing=true;}
         });
 
         videoElement.addEventListener('durationchange',
@@ -358,7 +356,7 @@ It reads what to play from the `songList.json`, which supports several mixtapes.
       this.playing = false;
 
       if(this.selectedMedia){
-        this.selectedSong.active = false;
+        this.selectedMedia.active = false;
 
         if(this.selectedMedia.type == "video") {
           this.disableVideo();
