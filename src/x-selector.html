@@ -1,0 +1,58 @@
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="x-mixtaper.html">
+
+<dom-module id="x-selector">
+  <template>
+
+    <div>
+      <span>[[selectedMessage]]</span>
+      <span>[[oldSelectedMessage]]</span>
+      <span>[[sel]]</span>
+    </div>
+
+    <paper-menu selected="{{selectedIndex}}" id="menu">
+      <paper-item>mixtapes.json</paper-item>
+      <paper-item>mixtapes0.json</paper-item>
+    </paper-menu>
+
+    <x-mixtaper id="mix" tape="tape1" uri=""></x-mixtaper>
+  </template>
+
+  <script>
+    Polymer({
+      is: "x-selector",
+
+      created: function() {
+        this.items = ["/mixtapes.json", "/mixtapes0.json"];
+      },
+
+      ready: function(){
+        console.log("sdfklj");
+      },
+
+      properties: {
+        selectedIndex: {
+          type: Number,
+          value: 0,
+          observer: '_selectedIndexChanged'
+        }
+      },
+
+      _selectedIndexChanged: function(newIndex, oldIndex) {
+        if (typeof newIndex === 'number') {
+          this.selectedMessage = 'You selected item #' + newIndex + '.';
+        }
+        if (typeof oldIndex === 'number') {
+          this.oldSelectedMessage = 'Before, you had item #' + oldIndex + ' selected.';
+        }
+
+        this.sel = this.items[newIndex];
+        this.$.mix.uri = this.sel;
+
+      }
+
+    });
+  </script>
+
+</dom-module>

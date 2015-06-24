@@ -1,4 +1,4 @@
-<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 <!--
   API access
 
@@ -6,32 +6,78 @@
   @type Array
   @default []
 -->
-<polymer-element name="tape-service" attributes="tape tapeId">
+<dom-module id="tape-service">
   <template>
     <style>
     :host {
       display: none;
     }
     </style>
-    <core-ajax id="ajax"
-      auto
-      url="/mixtapes.json"
-      on-core-response="{{tapeLoaded}}"
-      handleAs="json">
-    </core-ajax>
+
+    <iron-ajax id="ajax"
+      url=""
+      on-response="tapeLoaded"
+      handle-as="json">
+    </iron-ajax>
+
   </template>
+
   <script>
-  Polymer('tape-service', {
+  Polymer({
+    is: 'tape-service',
+
+    properties: {
+      tapeId : {
+        type: Number
+      },
+      tapeUri : {
+        type: String,
+        value: "",
+        reflectToAttribute: true,
+        observer: "tapeUriChanged"
+      }
+    },
+
     created: function() {
       this.tape = {};
       this.tapeId = this.tapeId || "tape1";
+      console.log("tape created");
     },
-    tapeLoaded: function() {
-      // Make a copy of the loaded data
-      this.tape = this.$.ajax.response[this.tapeId];
-      this.fire('tape-loaded');
+
+    tapeUriChanged: function(evt) {
+      if(evt) {
+        /*
+          is there a way to disable caching for polymer ajax?
+        */
+        var nocache = new Date().getTime();
+        var params = '{"cache":'+nocache+'}';
+        console.log(params);
+
+        this.$.ajax.url = evt;
+        this.$.ajax.params= params;
+        this.$.ajax.generateRequest();
+      }
+    },
+
+    tapeLoaded: function(request) {
+
+      try {
+        console.log("######################");
+        console.log(request);
+        console.log(request.detail.response);
+        console.log(this.$.ajax.lastResponse);
+
+        this.loadedTape = request.detail.response[this.tapeId];
+        console.log("sdf");
+        console.log(this.loadedTape);
+        this.fire('tape-loaded');
+        console.log("tape loaded");
+      }
+      catch(err) {
+          console.log("errpr");
+      }
     }
 
   });
   </script>
-</polymer-element>
+</dom-module>

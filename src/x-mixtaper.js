@@ -1,4 +1,9 @@
-Polymer('x-mixtaper',{
+Polymer({
+  is: 'x-mixtaper',
+
+  created: function() {
+    console.log("xmix created");
+  },
   publish: {
     audioFilesUrl: {
       reflect: true

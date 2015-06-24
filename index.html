@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- 1. Load platform.js for polyfill support. -->
-    <script src="bower_components/platform/platform.js"></script>
+    <!-- 1. Load webcomponents.js for polyfill support. -->
+    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
 
     <!-- 2. Use an HTML Import to bring in the element. -->
-    <link rel="import" href="src/x-mixtaper.html">
-
-    <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
+    <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
     <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="bower_components/iron-icons/iron-icons.html">
+
+    <link rel="import" href="src/x-selector.html">
 
     <style>
       * {
@@ -25,20 +26,22 @@
         color: #f1f1f1;
         fill: #f1f1f1;
       }
+
+      .container {
+        padding: 100px;
+      }
+
     </style>
 
   </head>
   <body unresolved touch-action="auto">
 
-  <core-toolbar style="background: #4285f4;">
-    <paper-icon-button icon="menu"></paper-icon-button>
-    <span flex>Mixtaperz</span>
-    <paper-icon-button icon="refresh"></paper-icon-button>
-    <paper-icon-button icon="more-vert"></paper-icon-button>
-  </core-toolbar>
+  <paper-toolbar style="background: #4285f4;">
+    <div class="title">Mixtaperz</div>
+  </paper-toolbar>
 
   <div class="container" layout vertical center>
-    <x-mixtaper tape="tape1"></x-mixtaper>
+    <x-selector></x-selector>
   </div>
 
   </body>

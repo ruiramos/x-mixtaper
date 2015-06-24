@@ -1,7 +1,8 @@
 
-<link rel="import" href="../bower_components/core-icon-button/core-icon-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link href="../bower_components/iron-icons/iron-icons.html" rel="import">
 
-<polymer-element name="play-button" attributes="playing">
+<dom-module id="play-button">
   <template>
     <style>
     :host {
@@ -9,32 +10,25 @@
 
     }
 
-    core-icon-button {
+    playbutton::shadow #ripple {
+      color: red;
+    }
+
+    paper-icon-button {
       align-items: stretch;
       flex-grow: 1;
       height: auto;
       text-align:center;
-      line-height:132px;
+      padding: 50px;
     }
     </style>
 
-    <core-icon-button icon="{{ playing ? 'close' : 'chevron-right'}}" on-click="{{ playPauseHandler }}"></core-icon-button>
+    <paper-icon-button id="playbutton" icon="chevron-right" style="color: red;"></paper-icon-button>
 
   </template>
   <script>
-    Polymer('play-button', {
-      /**
-        Handles the play/pause button click
-
-        @method playPauseHandler
-      */
-      playPauseHandler: function(){
-        if(this.playing){
-          this.fire('stop');
-        } else {
-          this.fire('play');
-        }
-      }
+    Polymer({
+      is: 'play-button'
     });
   </script>
-</polymer-element>
+</dom-module>
