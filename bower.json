@@ -2,7 +2,8 @@
   "name": "x-mixtaper",
   "version": "0.1.0",
   "authors": [
-    "Rui Ramos <ruiramos@gmail.com>"
+    "Rui Ramos <ruiramos@gmail.com>",
+    "Niklas Klügel <lodsb@lodsb.org>"
   ],
   "description": "x-mixtaper is a Web Components (Polymer) audio player with playlist functionality built for sharing/publishing mixtapes and playlists.",
   "main": "index.html",
@@ -20,8 +21,11 @@
     "web-components"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#master",
-    "core-elements": "Polymer/core-elements#master",
-    "paper-elements": "Polymer/paper-elements#master"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.0",
+    "platinum-elements": "PolymerElements/platinum-elements#^1.0.0",
+    "neon-elements": "PolymerElements/neon-elements#^1.0.0",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.0",
+    "video.js": "~4.12.10"
   }
 }

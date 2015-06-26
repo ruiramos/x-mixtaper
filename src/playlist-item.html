@@ -1,27 +1,35 @@
 
-<link rel="import" href="../bower_components/core-item/core-item.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../bower_components/paper-ripple/paper-ripple.html">
+<link href="../bower_components/iron-icons/iron-icons.html" rel="import">
 
-<polymer-element name="playlist-item" attributes="song">
+<dom-module id="playlist-item">
   <template>
-
     <link rel="stylesheet" href="playlist-item.css">
 
-    <paper-ripple id="ripple"></paper-ripple>
+      <paper-item>
+          <iron-icon icon="chevron-right"></iron-icon>
+          <div><span class="artist">{{ song.artist }}</span> - <span class="title">{{ song.title }}</span></div>
+          <div>{{ song.length }}</div>
+      </paper-item>
 
-    <core-item icon="chevron-right">
-      <span class="info">{{ song.artist }} - {{ song.title }}</span>
-      <span class="length">{{ song.length }}</span>
-    </core-item>
 
   </template>
+
   <script>
-    Polymer('playlist-item', {
-      publish: {
+    Polymer({
+      is: 'playlist-item',
+
+      properties: {
+        song: {
+          type: Object,
+          reflectToAttribute: true
+        },
         playing: {
-          reflect: true
+          type: Boolean,
+          reflectToAttribute: true
         }
       }
     });
   </script>
-</polymer-element>
+</dom-module>

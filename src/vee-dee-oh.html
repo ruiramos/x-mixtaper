@@ -1,0 +1,450 @@
+<!--<template>
+    <p>Hello <strong></strong> :)</p>
+</template>-->
+
+<script type="text/javascript">
+    (function(window, document, undefined) {
+        'use strict';
+
+        /*jshint laxcomma:true */
+
+
+        var ua = navigator.userAgent.toLowerCase();
+        var isAndroid = (/android/).test(ua);
+
+
+
+        var flashHttpMimeTypes = [
+            'video/mp4',
+            'video/x-mp4',
+            'video/flv',
+            'video/x-flv',
+            'rtmp/flv',
+            'rtmp/x-flv',
+            'rtmp/mp4',
+            'rtmp/x-mp4'
+            //'application/x-mpegurl'
+        ];
+
+        var flashRtmpMimeTypes = [
+            'rtmp/flv',
+            'rtmp/x-flv',
+            'rtmp/mp4',
+            'rtmp/x-mp4'
+        ];
+
+        var flashMimeTypes = flashHttpMimeTypes.concat(flashRtmpMimeTypes);
+
+
+
+        var listToArr = function(lst) {
+            var l = lst.length;
+            var arr = new Array(l);
+            for (var i = 0; i < l; ++i) {
+                arr[i] = lst[i];
+            }
+            return arr;
+        };
+
+
+
+        // refers to the "importer", which is demo.html
+        // var thatDoc = document;
+
+        // refers to the "importee", which is src/vee-dee-oh.html
+        // var thisDoc = document._currentScript.ownerDocument;
+
+        // gets content from <template>
+        //var template = thisDoc.querySelector('template').content;
+
+
+
+        // creates an object based in the HTML Element prototype
+        var element = Object.create(HTMLElement.prototype);
+
+        // fires when an instance of the element is created
+        element.createdCallback = function() {
+            // creates the shadow root
+            var rootEl = this.createShadowRoot();
+
+            this._rootEl = rootEl;
+        };
+
+        // fires when an instance was inserted into the document
+        element.attachedCallback = function() {
+            var styleEl = document.createElement('style');
+            styleEl.setAttribute('type', 'text/css');
+            this._rootEl.appendChild(styleEl);
+            styleEl.innerHTML = [
+                'video { background-color: #000; }',
+                'video, object { width: 100%; height: 100%; }'
+            ].join('\n');
+
+            this._chooseSource( this._readSources() );
+        };
+
+        // fires when an instance was removed from the document
+        element.detachedCallback = function() {
+
+        };
+
+        // Fires when an attribute was added, removed, or updated
+        element.attributeChangedCallback = function(attrName, oldVal, newVal) {
+            //console.log('attr changed:', attr, oldVal, newVal);
+        };
+
+
+
+        element.isPlaying = function() {
+            if (this._videoEl) {
+                return (
+                    this._videoEl.currentTime > 0 &&
+                    !this._videoEl.paused &&
+                    !this._videoEl.ended
+                );
+            }
+            else if (this._objectEl) {
+                return (
+                    this._objectEl.vjs_getProperty('currentTime') > 0 &&
+                    !this._objectEl.vjs_getProperty('paused') //&&
+                    //!this._ended
+                    //!this._el.vjs_getProperty('ended')
+                );
+            }
+            return false;
+        };
+
+        element.play = function() {
+            if      (this._videoEl) {  this._videoEl.play();                                    }
+            else if (this._objectEl) { this._objectEl.vjs_play(); this._setupTimeUpdateTimer(); }
+        };
+
+        element.pause = function() {
+            if      (this._videoEl) {  this._videoEl.pause();                                      }
+            else if (this._objectEl) { this._objectEl.vjs_pause(); this._destroyTimeUpdateTimer(); }
+        };
+
+        element.load = function(o) {
+            if (!o) { o = this._readSources(); }
+            if (o.length > 0) {
+                this._chooseSource(o);
+            }
+        };
+
+
+
+        element._readSources = function() {
+            var sourceEls = listToArr( this.querySelectorAll('source') );
+            var l = sourceEls.length;
+            var sourcesList = [];
+            var sourceEl;
+            for (var i = l - 1; i >= 0; --i) {
+                sourceEl = sourceEls[i];
+                sourcesList.unshift({
+                    src:  sourceEl.getAttribute('src'),
+                    type: sourceEl.getAttribute('type').toLowerCase()
+                });
+                sourceEl.parentNode.removeChild(sourceEl);
+            }
+            return sourcesList;
+        };
+
+        element._chooseSource = function(sources) { // sets _source, _type, _impl and calls appropriate
+            var autoplay = this.hasAttribute('autoplay');
+
+            var el = document.createElement('video');
+            var source, i, I = sources.length;
+            for (i = 0; i < I; ++i) {
+                source = sources[i];
+                if (!!el.play) {
+                    if (
+                        !!( el.canPlayType(source.type).replace(/^no$/, '') )   ||
+                          (isAndroid && source.type === 'application/x-mpegurl') // android hack for HLS
+                    ) {
+                        this._src  = source.src;
+                        this._type = source.type;
+                        this._wireHtml5(autoplay);
+                        return;
+                    }
+                }
+
+                if (SWF.isSupported()) {
+                    if (flashMimeTypes.indexOf(source.type) !== -1) {
+                        this._src  = source.src;
+                        this._type = source.type;
+                        this._wireFlash(autoplay);
+                        return;
+                    }
+                }
+            }
+
+            if (sources.length > 0) {
+                this._unwire();
+                this._alertEl = document.createElement('div');
+                var markup = ['unsupported formats:<br/>'];
+                sources.forEach(function(source) {
+                    markup = markup.concat([
+                        '<a target="_blank" href="', source.src, '">', source.src, '</a><br/>'
+                    ]);
+                });
+                this._alertEl.innerHTML = markup.join('');
+                this._rootEl.appendChild(this._alertEl);
+            }
+        };
+
+        element._unwire = function() {
+            var implEl = this._videoEl || this._objectEl;
+            if (implEl) {
+                if (this.isPlaying()) {
+                    this.pause();
+                }
+                this._rootEl.removeChild(implEl);
+                var ev = new Event('pause');
+                this.dispatchEvent(ev);
+            }
+            if (this._alertEl) {
+                this._rootEl.removeChild(this._alertEl);
+            }
+            delete this._videoEl;
+            delete this._objectEl;
+            delete this._alertEl;
+            delete this._impl;
+        };
+
+        element._wireHtml5 = function(autoplay) {
+            this._unwire();
+
+            this._impl = 'html5';
+
+            var videoEl = document.createElement('video');
+
+            var poster = this.getAttribute('poster');
+            if (poster) {
+                videoEl.setAttribute('poster', poster);
+            }
+
+            if (autoplay) {
+                videoEl.setAttribute('autoplay', '');
+            }
+
+            this._videoEl = videoEl;
+            this._rootEl.appendChild(videoEl);
+
+            videoEl.type = this._type;
+            videoEl.src  = this._src;
+        };
+
+        element._setupTimeUpdateTimer = function() {
+            if (this._timer) { return; }
+            this._timer = setInterval(this._onTimeUpdate.bind(this), 250);
+        };
+
+        element._destroyTimeUpdateTimer = function() {
+            if (!this._timer) { return; }
+            clearInterval(this._timer);
+            delete this._timer;
+        };
+
+        element._onTimeUpdate = function() { // used to emulate video's timeupdate on videojs
+            var ev = new Event('timeupdate');
+            this.dispatchEvent(ev);
+        };
+
+        element._wireFlash = function(autoplay) {
+            this._unwire();
+
+            this._impl = 'flash';
+
+            var item = {
+                type: this._type,
+                src:  this._src
+            };
+
+            var objectEl;
+            var id = ~~(Math.random() * 100000);
+
+            var readySymbol = '_ready' + id;
+            var eventSymbol = '_event' + id;
+            var errorSymbol = '_error' + id;
+
+            window[readySymbol] = function(id) {
+                //console.log('READY');
+                objectEl.style.zIndex = '';
+                this._objectEl = objectEl;
+            }.bind(this);
+
+            window[eventSymbol] = function(id, evName, val) {
+                var ev;
+                //console.log('EVENT', evName, val);
+                switch (evName) {
+                    case 'stageclick':
+                        //this._onClick();
+                        ev = new Event('click');
+                        this.dispatchEvent(ev);
+                        break;
+
+                    case 'canplay':
+                    case 'canplaythrough':
+                    case 'durationchange':
+                    case 'loadeddata':
+                    case 'loadedmetadata':
+                    case 'loadstart':
+                    case 'pause':
+                    case 'playing':
+                    case 'play':
+                    case 'seeking':
+                    case 'seeked':
+                    case 'volumechange':
+                    case 'waiting':
+                        ev = new Event(evName);
+                        this.dispatchEvent(ev);
+                        break;
+
+                    case 'onsrcchange':
+                    case 'rtmpconnected':
+                        break;
+
+                    default:
+                        console.log('unhandled event', evName);
+                }
+            }.bind(this);
+
+            window[errorSymbol] = function(id, errName) {
+                console.error('ERROR', errName);
+            }.bind(this);
+
+
+
+            var flashVars = { // https://github.com/videojs/video-js-swf/blob/master/src/VideoJS.as
+                 readyFunction:           readySymbol
+                ,eventProxyFunction:      eventSymbol
+                ,errorEventProxyFunction: errorSymbol
+                ,autoplay:                autoplay
+                ,preload:                 'metadata'
+                // ,preload: true
+                // ,preload:                 'auto'
+                // ,autoplay:                'true'
+                // ,debug
+                // ,mode
+                // ,src
+                // ,rtmpConnection
+                // ,rtmpStream
+                // ,poster
+            };
+
+            if (flashRtmpMimeTypes.indexOf(item.type) !== -1) {
+                var lastSlash = item.src.lastIndexOf('/');
+                flashVars.rtmpConnection = item.src.substring(0, lastSlash);
+                flashVars.rtmpStream     = item.src.substring(lastSlash + 1);
+            }
+            else {
+                flashVars.src = item.src;
+            }
+
+            var poster = this.getAttribute('poster');
+            if (poster) {
+                flashVars.poster = poster;
+            }
+
+            objectEl = SWF.embed({
+                swf:       'ext/videojs.swf', // SWF file to load
+                dims:      [1, 1],                   // dimensions in pixels
+                //id:        'vpaid',                  // id and name for object element (if ommitted, random one will be generated)
+                container: this._rootEl,            // container element
+                params: { // params
+                     allowfullscreen:   true     // if trueish, allowfullscreen param is set to true
+                    ,allowscriptaccess: 'always' // allowscriptaccess param
+                    ,wmode:             'opaque' // wmode param: opaque | transparent | window
+                     //bgcolor:           '#FF0000',     // bgcolor param
+                     //quality:           'high'         // quality param
+                },
+                flashvars: flashVars, // flashVars
+                insteadOf: false // if true, repaces container, otherwise appends container
+            });
+
+            objectEl.style.zIndex = 10000;
+        };
+
+
+        Object.defineProperties(
+            element,
+            {
+                autoplay: {
+                    get: function() {
+                        return !!this.hasAttribute('autoplay');
+                    },
+                    set: function(p) {
+                        if (p) {
+                            this.setAttribute('autoplay', '');
+                        }
+                        else {
+                            this.removeAttribute('autoplay', '');
+                        }
+                    }
+                },
+                currentTime: {
+                    get: function() {
+                        if      (this._videoEl) {  return this._videoEl.currentTime;                     }
+                        else if (this._objectEl) { return this._objectEl.vjs_getProperty('currentTime'); }
+                    },
+                    set: function(t) {
+                        if      (this._videoEl) {  this._videoEl.currentTime = t;                    }
+                        else if (this._objectEl) { this._objectEl.vjs_setProperty('currentTime', t); }
+                    }
+                },
+                duration: {
+                    get: function() {
+                        if      (this._videoEl) {  return this._videoEl.duration;           }
+                        else if (this._objectEl) { return this._objectEl.vjs_getProperty('duration'); }
+                    }
+                },
+                poster: {
+                    get: function() {
+                        return this.getAttribute('poster');
+                    },
+                    set: function(p) {
+                        return this.setAttribute('poster', p);
+                    }
+                },
+                src: {
+                    get: function() {
+                        return this._src;
+                    }
+                },
+                type: {
+                    get: function() {
+                        return this._type;
+                    }
+                },
+                volume: {
+                    get: function() {
+                        if      (this._videoEl) {  return this._videoEl.volume;                     }
+                        else if (this._objectEl) { return this._objectEl.vjs_getProperty('volume'); }
+                    },
+                    set: function(v) {
+                        if      (this._videoEl) {  this._videoEl.volume = v;                    }
+                        else if (this._objectEl) { this._objectEl.vjs_setProperty('volume', v); }
+                    }
+                },
+                videoWidth: {
+                    get: function() {
+                        if      (this._videoEl) {  return this._videoEl.videoWidth;           }
+                        else if (this._objectEl) { return this._objectEl.vjs_getProperty('videoWidth'); }
+                    }
+                },
+                videoHeight: {
+                    get: function() {
+                        if      (this._videoEl) {  return this._videoEl.videoHeight;           }
+                        else if (this._objectEl) { return this._objectEl.vjs_getProperty('videoHeight'); }
+                    }
+                }
+            }
+        );
+
+
+
+        document.registerElement('vee-dee-oh', {
+            prototype: element
+        });
+    }(window, document));
+</script>

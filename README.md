@@ -5,8 +5,12 @@ x-mixtaper is a Web Components (Polymer based) audio player with playlist functi
 
 It reads what to play from the `mixtapes.json`, which supports several playlists.
 
+* now with video support
+* up'd to polymer 1.0
+* playlist is a property, can be dynamically changed
+
 ## Demo
-[Here](http://mix.ruiramos.com/)
+-..
 
 ## Install
 Install the component using [Bower](http://bower.io/):

@@ -1,15 +1,16 @@
-
-<link rel="import" href="../bower_components/polymer/polymer.html">
-
 <link rel="import" href="../bower_components/paper-slider/paper-slider.html">
-<link rel="import" href="../bower_components/font-roboto/roboto.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
 
 <link rel="import" href="play-button.html">
+
 <link rel="import" href="x-playlist.html">
 
 <link rel="import" href="tape-service.html">
-
+<link rel="import" href="vee-dee-oh.html">
 <!--
+
+
 x-mixtaper is a Web Components (Polymer) audio player with playlist functionality built for sharing/publishing mixtapes and playlists.
 
 It reads what to play from the `songList.json`, which supports several mixtapes.
@@ -22,38 +23,368 @@ It reads what to play from the `songList.json`, which supports several mixtapes.
 @element x-mixtaper
 @status alpha
 -->
-<polymer-element name="x-mixtaper">
+<dom-module id="x-mixtaper">
   <template>
-
     <link rel="stylesheet" href="x-mixtaper.css">
+
+    <div>
+      <div>
+        <div style="float: left;">
+          <play-button
+            id="playButton"
+            playing="playing }}"
+            on-click="playButtonHandler"></play-button>
+        </div>
+        <div style="float: right;">
+          <span>{{selectedMedia.artist}}</span><span>{{selectedMedia.title}}</span><br/>
+          <label for="duration">duration</label>
+          <span id="mediaDuration"></span><br/>
+
+          <label for="size">size</label>
+          <span id="mediaSize"></span><br/>
+
+          <label for="current-time">current time</label>
+          <span id="mediaCurrentTime"></span>
+          <span>{{videoUri}}</span>
+        </div>
+      </div>
+
+      <paper-slider
+        min="0"
+        max="{{ trackDuration }}"
+        value="{{ trackElapsed }}"
+        id="slider" style="background: #DDF;"></paper-slider>
+    </div>
+
+    <div>
+      <div class="header">
+        <span class="mixtaper-title">{{loadedTape.title}}</span>
+        <div class="mixtaper-description" style="margin: 20px;">{{loadedTape.description}}</div>
+      </div>
+
+      <div id="dummyvid"></div>
+
+      <div style="padding: 50px;">
+        <span style="font-size: 30px;">Playlist</span><br>
+        <x-playlist
+          id="playlist"
+          on-play-media="playListCLickHandler"></x-playlist>
+      </div>
+    </div>
 
     <tape-service
       tapeId="tape1"
       tape="{{ tape }}"
-      on-tape-loaded="{{ tapeLoadedHandler }}"></tape-service>
+      id="service"
+      on-tape-loaded="tapeLoadedHandler"></tape-service>
 
     <audio
       id="audioElement"
       preload="auto"
-      src="{{ selectedSong.file }}"></audio>
+      src="{{ selectedSong.uri }}"></audio>
 
-    <play-button
-      id="playButton"
-      playing="{{ playing }}"
-      on-stop="{{ stopButtonHandler }}"
-      on-play="{{ playButtonHandler }}"></play-button>
-
-    <x-playlist
-      tape="{{ tape }}"
-      on-play-song="{{ playListCLickHandler }}"></x-playlist>
-
-    <paper-slider
-      min="0"
-      max="{{ trackDuration }}"
-      value="{{ trackElapsed }}"
-      id="slider"></paper-slider>
 
   </template>
-  <script type="text/javascript" src="animation.js"></script>
-  <script type="text/javascript" src="x-mixtaper.js"></script>
-</polymer-element>
+
+
+  <script>
+
+  Polymer({
+    is: 'x-mixtaper',
+
+    created: function() {
+      console.log("xmix created");
+    },
+
+    properties: {
+      audioFilesUrl: {
+        type: String,
+        reflect: true
+      },
+      playing: {
+        type: Boolean,
+        value: false
+      },
+      tape: {
+        type: Object,
+        reflectToAttribute: true
+      },
+      loadedTape: {
+        type: Object,
+        reflectToAttribute: true,
+        notify: true
+      },
+      uri: {
+        type: String,
+        reflectToAttribute: true,
+        observer: "playlistUriObserver"
+      }
+    },
+
+    playlistUriObserver: function(evt) {
+      this.$.service.tapeUri = evt;
+    },
+
+    /**
+      Executes when everything is in its right place
+
+      @method ready
+    */
+    ready: function(){
+      console.log("xmix ready");
+      var that = this;
+
+      this.trackDuration = 0;
+      this.trackElapsed = 0;
+
+      console.log(this.$.service.tapeUri);
+
+      var audioElement = this.$.audioElement;
+
+      audioElement.addEventListener('canplay', function(){
+        var theAudio = this;
+
+        that.trackDuration = this.duration * 1000;
+        that.trackElapsed = this.currentTime;
+
+        that.$.mediaDuration.innerHTML = this.duration.toFixed(1) + ' s';
+
+        this.play();
+        that.playing = true;
+      });
+
+      audioElement.addEventListener('durationchange',
+        function() {
+          that.trackDuration = audioElement.duration * 1000;
+          that.$.mediaDuration.innerHTML = audioElement.duration.toFixed(1) + ' s';
+      });
+
+      // whenever it's playing, we want the slider moving!
+      /*
+      audioElement.addEventListener('playing', function(){
+
+      });*/
+
+      audioElement.addEventListener('ended', function(){
+        that.cueNextPlaylistItem();
+      });
+
+      audioElement.addEventListener('timeupdate',
+        function() {
+          that.trackElapsed = audioElement.currentTime * 1000
+          that.$.mediaCurrentTime.innerHTML = audioElement.currentTime.toFixed(1) + ' s';
+      });
+
+      this.$.slider.addEventListener('change', function(evt, d){
+        that.cueMediaPlayhead(this.value/1000.0);
+      });
+
+      this.enableVideo = function(media){
+        /*
+          todo: correctly set type
+        */
+        var videoElement = document.createElement("vee-dee-oh");
+        videoElement.innerHTML = "<source type=\"video/mp4\"  src=\""+media.uri+"\"></vee-dee-oh>";
+        that.$.dummyvid.appendChild(videoElement);
+        videoElement.play();
+
+
+        //that.$.dummyvid.innerHTML = "<vee-dee-oh id=\"videoElement\" autoplay><source type=\"video/mp4\"  src=\""+vuri+"\"></vee-dee-oh>";
+
+        console.log(that.$.dummyvid.innerHTML);
+
+        videoElement.addEventListener('click',
+          function() { if (videoElement.isPlaying()) { videoElement.pause(); that.playing = false;} else { videoElement.play(); that.playing=true;}
+        });
+
+        videoElement.addEventListener('durationchange',
+          function() {
+            that.trackDuration = videoElement.duration * 1000;
+            that.$.mediaDuration.innerHTML = videoElement.duration.toFixed(1) + ' s';
+        });
+
+        videoElement.addEventListener('loadedmetadata',
+          function() { that.$.mediaSize.innerHTML = [videoElement.videoWidth, videoElement.videoHeight].join('x') + ' px';
+        });
+
+        videoElement.addEventListener('timeupdate',
+          function() {
+            that.trackElapsed = videoElement.currentTime * 1000
+            that.$.mediaCurrentTime.innerHTML = videoElement.currentTime.toFixed(1) + ' s';
+        });
+
+
+        that.pauseMedia = function() {
+          videoElement.pause();
+          this.playing = false;
+        };
+
+        that.playMedia  = function() {
+          videoElement.play();
+          this.playing = true;
+        };
+
+        that.resetMediaPlayhead = function() {
+          videoElement.currentTime = 0;
+        }
+
+        that.cueMediaPlayhead = function(pos) {
+          videoElement.currentTime = pos;
+        }
+
+
+      };
+
+      this.disableVideo = function() {
+        that.$.dummyvid.innerHTML ="";
+      };
+
+      this.enableAudio = function(media) {
+        that.selectedSong = media;
+
+        that.pauseMedia = function() {
+          audioElement.pause();
+          this.playing = false;
+        };
+
+        that.playMedia  = function() {
+          audioElement.play();
+          this.playing = true;
+        };
+
+        that.resetMediaPlayhead = function() {
+          audioElement.currentTime = 0;
+        }
+
+        that.cueMediaPlayhead = function(pos) {
+          audioElement.currentTime = pos;
+        }
+
+      };
+
+      this.disableAudio = function(){
+        audioElement.pause()
+      };
+
+    },
+
+    /**
+      Triggered when the data comes back from the API.
+      For now it simply starts playing the first song.
+
+      @method tapeLoadedHandler
+    */
+    tapeLoadedHandler: function(){
+      // starts playing the first song by default
+      //this.playSong(this.tape.songs[0]);
+      this.loadedTape = this.$.service.loadedTape;
+
+      this.$.playlist.tape = this.loadedTape;
+    },
+
+    cueNextPlaylistItem: function() {
+      for(var i = 0; i < this.loadedTape.songs.length; i++){
+        if(this.loadedTape.songs[i] === this.selectedMedia){
+          break;
+        }
+      }
+        var next = (i === this.loadedTape.songs.length - 1) ? 0 : i+1;
+        console.log("nex");
+        console.log(this.loadedTape.songs[next]);
+        this.changeMedia(this.loadedTape.songs[next]);
+    },
+
+    playButtonHandler: function(){
+
+      if(this.playing && typeof this.loadedTape !== 'undefined') {
+        // then pause
+
+        this.pauseMedia();
+        /*
+        this.$.audioElement.pause();
+        clearRequestInterval(this.sliderUpdateInterval);
+        */
+
+      } else {
+
+        if(typeof this.$.audioElement.attributes.src == 'undefined'){
+          this.changeMedia(this.loadedTape.songs[0]);
+        }
+
+        this.playMedia();
+
+      }
+
+    },
+
+    /**
+      Handling playlist clicks
+
+      @method playSongHandler
+    */
+    playListCLickHandler: function(e, media){
+      if(media === this.selectedMedia){
+
+        this.resetMediaPlayhead();
+
+      } else {
+
+        this.changeMedia(media);
+
+      }
+
+    },
+
+    /**
+      Starts playing the selected song.
+
+      @method playSong
+    *//*
+    playSong: function(song){
+      this.playing = false;
+
+      if(this.selectedSong){
+        this.selectedSong.active = false;
+      }
+
+      song.active = true;
+
+      this.selectedSong = song;
+    },*/
+
+    changeMedia: function(media) {
+      this.playing = false;
+
+      if(this.selectedMedia){
+        this.selectedMedia.active = false;
+
+        if(this.selectedMedia.type == "video") {
+          this.disableVideo();
+        }
+
+        if(this.selectedMedia.type == "audio") {
+          this.disableAudio();
+        }
+      }
+
+      media.active = true;
+
+      this.selectedMedia = media;
+
+      if(this.selectedMedia.type == "video") {
+        this.enableVideo(media);
+      }
+
+      if(this.selectedMedia.type == "audio") {
+        this.enableAudio(media);
+      }
+
+      this.playMedia();
+
+    },
+
+  });
+
+  </script>
+
+</dom-module>

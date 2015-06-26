@@ -1,7 +1,19 @@
+.header {
+  width: 100%;
+}
+
+.mixtaper-title {
+  font-size: 30px;
+}
+
+.mixtaper-description {
+  margin: 45px;
+}
+
 :host {
-  width: 800px;
-  background: #eee;
-  margin:24px 0;
+    width: 800px;
+    background: #eee;
+    margin:24px 0;
 }
 
 play-button {

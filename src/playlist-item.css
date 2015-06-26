@@ -1,29 +1,4 @@
-:host([playing]) core-item {
-  color: black;
-  fill: #4285f4;
-}
-
-:host {
-  display: block;
-  position: relative;
-  -webkit-user-select: none;
-  user-select: none;
-  cursor: pointer;
-  height: 36px;
-  padding: 0 12px;
-}
-
-#ripple {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  color: #4285f4;
-  z-index:9999;
-}
-
-core-item {
+paper-item {
   fill: #d0d0d0;
   color:#999;
 }
@@ -35,4 +10,25 @@ span.info {
 span.length {
   font-size:0.8em;
   font-weight:100;
+}
+
+span.artist {
+  font-size: 20px;
+}
+
+span.title {
+  font-size: 20px;
+}
+
+span.length {
+  font-size: 20px;
+}
+
+span.location {
+  font-size: 16px;
+}
+
+span.type {
+  font-size: 18px;
+  color: blue;
 }
